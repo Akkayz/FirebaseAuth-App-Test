@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Text, StyleSheet } from "react-native";
+import { Text, StyleSheet, Alert } from "react-native";
 import { Formik } from "formik";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import { auth } from "../firebaseConfig"; // Firebase config file
@@ -24,8 +24,25 @@ export const LoginScreen = ({ navigation }) => {
       );
       console.log(userCredential.user); // In thông tin người dùng nếu đăng nhập thành công
     } catch (error) {
-      console.error("Login error: ", error); // In lỗi ra console
-      setErrorState(error.message); // Cập nhật errorState để hiển thị lỗi trong UI
+      switch (error.code) {
+        case "auth/wrong-password":
+          Alert.alert("Thông báo", "Sai mật khẩu. Vui lòng thử lại.");
+          break;
+        case "auth/user-not-found":
+          Alert.alert("Thông báo", "Tài khoản không tồn tại.");
+          break;
+        case "auth/invalid-email":
+          Alert.alert("Thông báo", "Email không hợp lệ.");
+          break;
+        case "auth/invalid-credential":
+          Alert.alert(
+            "Thông báo",
+            "Thông tin đăng nhập không hợp lệ. Vui lòng kiểm tra lại."
+          );
+          break;
+        default:
+          Alert.alert("Thông báo", "Có lỗi xảy ra: " + error.message);
+      }
     }
   };
 
@@ -108,7 +125,7 @@ export const LoginScreen = ({ navigation }) => {
           style={styles.borderlessButtonContainer}
           borderless
           title={"Forgot Password"}
-          onPress={() => {}}
+          onPress={() => navigation.navigate("ForgotPassword")}
         />
       </KeyboardAwareScrollView>
     </View>

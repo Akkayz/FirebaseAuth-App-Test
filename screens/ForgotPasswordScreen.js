@@ -1,21 +1,26 @@
 import React, { useState } from "react";
 import { StyleSheet, Text } from "react-native";
 import { Formik } from "formik";
-import auth from "../firebaseConfig";
+import { auth } from "../firebaseConfig"; // Ensure this is the correct import
 import { passwordResetSchema } from "../utils";
 import { Colors } from "../config";
 import { View, TextInput, Button, FormErrorMessage } from "../components";
-export const ForgotPasswordScreen = () => {
+import { sendPasswordResetEmail } from "firebase/auth"; // Remove getAuth import
+
+export const ForgotPasswordScreen = ({ navigation }) => {
   const [errorState, setErrorState] = useState("");
   const handleSendPasswordResetEmail = (values) => {
     const { email } = values;
-    auth()
-      .sendPasswordResetEmail(email)
+    sendPasswordResetEmail(auth, email)
       .then(() => {
         console.log("Success: Password Reset Email sent.");
       })
-      .catch((error) => setErrorState(error.message));
+      .catch((error) => {
+        console.error("Error: ", error.message);
+        setErrorState(error.message);
+      });
   };
+
   return (
     <View isSafe style={styles.container}>
       <View style={styles.innerContainer}>
@@ -64,18 +69,19 @@ export const ForgotPasswordScreen = () => {
         style={styles.borderlessButtonContainer}
         borderless
         title={"Go back to Login"}
-        onPress={() => {}}
+        onPress={() => navigation.navigate("Login")}
       />
     </View>
   );
 };
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: Colors.white,
     paddingHorizontal: 12,
   },
-  innercontainer: {
+  innerContainer: {
     alignItems: "center",
   },
   screenTitle: {
