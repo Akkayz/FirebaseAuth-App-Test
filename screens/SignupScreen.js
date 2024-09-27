@@ -1,14 +1,15 @@
 import React, { useState } from "react";
 import { Text, StyleSheet } from "react-native";
 import { Formik } from "formik";
-import { auth } from "../firebaseConfig";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
+import { auth } from "../firebaseConfig"; // Firebase config file
 import { View, TextInput, Logo, Button, FormErrorMessage } from "../components";
 import { Images, Colors } from "../config";
 import { useTogglePasswordVisibility } from "../hooks";
 import { signupValidationSchema } from "../utils";
+import { createUserWithEmailAndPassword } from "firebase/auth"; // Import the function from Firebase v9
 
-export const SignupScreen = (navigation) => {
+export const SignupScreen = ({ navigation }) => {
   const [errorState, setErrorState] = useState("");
   const {
     passwordVisibility,
@@ -21,16 +22,18 @@ export const SignupScreen = (navigation) => {
 
   const handleSignup = async (values) => {
     const { email, password } = values;
-    auth
-      .createUserWithEmailAndPassword(email, password)
-      .then(() => navigation.navigate("Login"))
-      .catch((error) => setErrorState(error.message));
+    try {
+      await createUserWithEmailAndPassword(auth, email, password);
+      navigation.navigate("Login");
+    } catch (error) {
+      setErrorState(error.message);
+    }
   };
 
   return (
     <View isSafe style={styles.container}>
       <KeyboardAwareScrollView enableOnAndroid={true}>
-        {/* LogoContainer: consits app logo and screen title */}
+        {/* LogoContainer: consists app logo and screen title */}
         <View style={styles.logoContainer}>
           <Logo uri={Images.logo} />
           <Text style={styles.screenTitle}>Create a new account!</Text>
@@ -104,7 +107,7 @@ export const SignupScreen = (navigation) => {
                 error={errors.confirmPassword}
                 visible={touched.confirmPassword}
               />
-              {/* Display Screen Error Mesages */}
+              {/* Display Screen Error Messages */}
               {errorState !== "" ? (
                 <FormErrorMessage error={errorState} visible={true} />
               ) : null}
