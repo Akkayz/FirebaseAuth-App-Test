@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { StyleSheet, Text } from "react-native";
+import { StyleSheet, Text, Alert } from "react-native";
 import { Formik } from "formik";
 import { auth } from "../firebaseConfig"; // Ensure this is the correct import
 import { passwordResetSchema } from "../utils";
@@ -13,7 +13,11 @@ export const ForgotPasswordScreen = ({ navigation }) => {
     const { email } = values;
     sendPasswordResetEmail(auth, email)
       .then(() => {
-        console.log("Success: Password Reset Email sent.");
+        Alert.alert(
+          "Thông báo",
+          "Đã gửi email đổi mật khẩu. Vui lòng kiểm tra hộp thư của bạn."
+        );
+        navigation.navigate("Login");
       })
       .catch((error) => {
         console.error("Error: ", error.message);

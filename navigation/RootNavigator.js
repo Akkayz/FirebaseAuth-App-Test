@@ -3,11 +3,11 @@ import { NavigationContainer } from "@react-navigation/native";
 import { auth } from "../firebaseConfig";
 import { AuthStack } from "./AuthStack";
 import { AppStack } from "./AppStack";
-import { AuthenticatedUserContext } from "../providers";
+import { AuthContext } from "../api/AuthContext";
 import { LoadingIndicator } from "../components";
 
 export const RootNavigator = () => {
-  const { user, setUser } = useContext(AuthenticatedUserContext);
+  const { user, setUser } = useContext(AuthContext);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
